@@ -1,7 +1,11 @@
-src/**
-**/*.ts
-tsconfig.json
 .vscode/**
+webview/src/**
+webview/tsconfig.json
+webview/node_modules/**
+webview/public/**
+src/**
+node_modules/**
 .gitignore
-README.md
-*.log
+tsconfig.json
+esbuild.config.js
+*.md

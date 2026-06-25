@@ -1,99 +1,62 @@
 {
   "name": "opencode-gui",
   "displayName": "OpenCode GUI",
-  "description": "VS Code sidebar chat UI for OpenCode with session, context, and slash-command support.",
-  "version": "0.0.1",
-  "publisher": "local",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.85.0"
-  },
-  "categories": [
-    "Other"
-  ],
+  "description": "AI coding chat powered by OpenCode",
+  "version": "0.1.0",
+  "publisher": "opencode",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Other"],
   "activationEvents": [
-    "onView:opencodeGui.chatView",
-    "onCommand:opencodeGui.showChat",
-    "onCommand:opencodeGui.newChat",
-    "onCommand:opencodeGui.focusInput"
+    "onCommand:opencode-gui.start",
+    "onView:opencode-gui.chat"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "opencodeGui.showChat",
-        "title": "OpenCode GUI: Show Chat"
-      },
-      {
-        "command": "opencodeGui.newChat",
-        "title": "OpenCode GUI: New Chat"
-      },
-      {
-        "command": "opencodeGui.focusInput",
-        "title": "OpenCode GUI: Focus Chat Input"
-      }
-    ],
     "viewsContainers": {
       "activitybar": [
-        {
-          "id": "opencodeGuiContainer",
-          "title": "OpenCode",
-          "icon": "media/icon.svg"
-        }
+        { "id": "opencode-gui", "title": "OpenCode", "icon": "$(terminal)" }
       ]
     },
     "views": {
-      "opencodeGuiContainer": [
-        {
-          "id": "opencodeGui.chatView",
-          "name": "Chat"
-        }
+      "opencode-gui": [
+        { "type": "webview", "id": "opencode-gui.chat", "name": "Chat" }
       ]
     },
+    "commands": [
+      { "command": "opencode-gui.start", "title": "OpenCode: Open Chat" },
+      { "command": "opencode-gui.newSession", "title": "OpenCode: New Session" },
+      { "command": "opencode-gui.selectModel", "title": "OpenCode: Select Model" },
+      { "command": "opencode-gui.editSystemPrompt", "title": "OpenCode: Edit System Prompt" }
+    ],
+    "keybindings": [
+      { "key": "ctrl+shift+i", "command": "opencode-gui.start" }
+    ],
     "configuration": {
       "title": "OpenCode GUI",
       "properties": {
-        "opencodeGui.autoAttachActiveFile": {
-          "type": "boolean",
-          "default": true,
-          "description": "Attach the active editor file automatically when sending a message."
-        },
-        "opencodeGui.autoAttachSelection": {
-          "type": "boolean",
-          "default": true,
-          "description": "Attach selected text from the active editor automatically when sending a message."
-        },
-        "opencodeGui.autoAttachOpenFiles": {
-          "type": "boolean",
-          "default": false,
-          "description": "Attach all open editor files automatically when sending a message."
-        },
-        "opencodeGui.opencodePath": {
+        "opencode-gui.cliPath": {
           "type": "string",
           "default": "opencode",
-          "description": "Path or command used to launch the OpenCode CLI."
+          "description": "Path to the opencode CLI binary"
+        },
+        "opencode-gui.zenApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenCode Zen API key for cloud models"
         }
       }
     }
   },
   "scripts": {
-    "build": "npm run build:extension && npm run build:webview",
-    "build:extension": "esbuild src/extension.ts --bundle --platform=node --format=cjs --outfile=dist/extension.js --external:vscode --external:opencode",
-    "build:webview": "esbuild src/webview/main.ts --bundle --platform=browser --format=iife --outfile=media/webview.js",
-    "watch": "concurrently -k \"npm:watch:extension\" \"npm:watch:webview\"",
-    "watch:extension": "esbuild src/extension.ts --bundle --platform=node --format=cjs --outfile=dist/extension.js --external:vscode --external:opencode --watch",
-    "watch:webview": "esbuild src/webview/main.ts --bundle --platform=browser --format=iife --outfile=media/webview.js --watch"
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.config.js && cd webview && npm run build",
+    "dev": "node esbuild.config.js --watch",
+    "lint": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/markdown-it": "^14.1.2",
-    "@types/node": "^22.15.0",
+    "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
-    "concurrently": "^9.2.1",
-    "esbuild": "^0.25.5",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "highlight.js": "^11.11.1",
-    "markdown-it": "^14.1.0"
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0"
   }
 }

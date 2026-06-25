@@ -1,11 +1,24 @@
 export type MessageRole = 'user' | 'assistant' | 'system' | 'tool';
-
 export type MessageStatus = 'sending' | 'streaming' | 'complete' | 'error';
+
+export type AgentStatus = 'idle' | 'thinking' | 'calling_tool' | 'executing' | 'streaming' | 'complete' | 'error';
+
+export type ToolStatus = 'running' | 'success' | 'error';
 
 export interface FileAttachment {
   path: string;
   content: string;
   language?: string;
+}
+
+export interface ToolCall {
+  id: string;
+  name: string;
+  status: ToolStatus;
+  input: string;
+  output: string;
+  executionTimeMs?: number;
+  error?: string;
 }
 
 export interface Message {
@@ -17,6 +30,17 @@ export interface Message {
   timestamp: number;
   model?: string;
   error?: string;
+  toolCalls?: ToolCall[];
+  thinking?: string;
+}
+
+export interface ExecutionBlock {
+  id: string;
+  userMessage: Message;
+  thinking?: string;
+  thinkingExpanded: boolean;
+  toolCalls: ToolCall[];
+  response: Message;
 }
 
 export interface Session {
@@ -36,29 +60,15 @@ export interface ModelInfo {
   description?: string;
 }
 
-export interface SlashCommand {
+export interface SlashCommandInfo {
   command: string;
   description: string;
-  handler: (args: string) => void | Promise<void>;
+  category?: string;
 }
 
-export interface WebviewMessage {
-  type: string;
-  payload?: Record<string, unknown>;
-}
-
-export interface StreamChunk {
-  type: 'text' | 'error' | 'done' | 'tool_start' | 'tool_end';
-  content?: string;
-  tool?: string;
-  input?: string;
-  output?: string;
-}
-
-export interface ExtensionState {
-  sessions: Record<string, Session>;
-  currentSessionId: string;
-  models: ModelInfo[];
-  zenApiKey?: string;
-  useZenApi: boolean;
+export interface AppSettings {
+  zenApiKey: string;
+  showThinking: boolean;
+  compactMode: boolean;
+  showTimestamps: boolean;
 }
